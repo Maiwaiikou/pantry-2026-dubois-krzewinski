@@ -18,7 +18,7 @@ linter:
     # une doc sur chaque membre public.
     public_member_api_docs: false
     # Les chaînes affichées sont en français et resteront en dur jusqu'à la
-    # séance 9, qui introduit l'internationalisation.
+    # séance 10, qui introduit l'internationalisation.
     lines_longer_than_80_chars: false
     # Les dépendances suivent l'ordre dans lequel `flutter pub add` les ajoute,
     # séance après séance.

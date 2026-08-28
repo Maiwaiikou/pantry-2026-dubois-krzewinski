@@ -20,7 +20,7 @@ flutter run -d chrome
 `flutter pub get` télécharge les paquets déclarés dans `pubspec.yaml`. Chaque séance en ajoute,
 par une commande donnée dans son énoncé.
 
-Travaillez sur votre propre branche :
+Travailler sur une branche personnelle :
 
 ```bash
 git switch -c tp02-<votrenom>

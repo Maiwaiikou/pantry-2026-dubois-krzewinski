@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 ///
 /// Widget fourni ; il n'est pas l'objet du TP. Aucune image n'est chargée en
 /// séance 2, ni depuis le réseau ni depuis les assets. Les photos des produits
-/// sont introduites en séance 4 avec l'API, leur mise en cache en séance 7.
+/// sont introduites en séance 4 avec l'API, leur mise en cache en séance 8.
 ///
 /// Son placement et son dimensionnement selon la maquette font partie du
 /// travail ; sa modification n'est pas nécessaire.
