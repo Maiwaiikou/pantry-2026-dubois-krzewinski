@@ -7,39 +7,22 @@ import 'package:pantry/ui/widgets/product_image_placeholder.dart';
 
 /// Écran « fiche produit », conforme à `design/fiche-produit.svg`.
 ///
+/// Corrigé de la séance 2, à un détail près : le sélecteur de produit de la
+/// barre supérieure a disparu. La fiche est désormais atteinte depuis la liste,
+/// avec le code-barres pour paramètre de route.
+///
 /// Le point structurant de cet écran n'est pas la mise en page mais le
 /// traitement des champs absents : chaque bloc décide de s'afficher, de se
-/// remplacer par un texte de repli, ou de disparaître. Les six produits mockés
-/// couvrent ces trois cas.
+/// remplacer par un texte de repli, ou de disparaître.
 class ProductDetailPage extends StatelessWidget {
-  const ProductDetailPage({
-    required this.product,
-    required this.onProductRequested,
-    required this.availableProducts,
-    super.key,
-  });
+  const ProductDetailPage({required this.product, super.key});
 
   final Product product;
-  final List<Product> availableProducts;
-  final ValueChanged<Product> onProductRequested;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Fiche produit'),
-        actions: [
-          PopupMenuButton<Product>(
-            tooltip: 'Changer de produit',
-            icon: const Icon(Icons.swap_horiz),
-            onSelected: onProductRequested,
-            itemBuilder: (context) => [
-              for (final p in availableProducts)
-                PopupMenuItem(value: p, child: Text(p.displayName)),
-            ],
-          ),
-        ],
-      ),
+      appBar: AppBar(title: const Text('Fiche produit')),
       // ListView plutôt que Column : la fiche doit défiler dès que la fenêtre
       // est basse. Une Column déborderait et afficherait le bandeau rayé.
       body: ListView(

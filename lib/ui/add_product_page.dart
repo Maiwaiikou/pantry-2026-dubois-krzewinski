@@ -165,7 +165,7 @@ class _AddProductPageState extends State<AddProductPage> {
               controller: _quantityController,
               decoration: const InputDecoration(
                 labelText: 'Quantité',
-                helperText: 'Facultatif, « 400 g », « 1 L »…',
+                helperText: 'Facultatif : « 400 g », « 1 L »…',
                 border: OutlineInputBorder(),
               ),
             ),
