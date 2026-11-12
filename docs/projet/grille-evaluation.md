@@ -8,7 +8,7 @@ Chaque critère se vérifie sur le dépôt rendu, par la manipulation ou la lect
 |---|---|---|
 | L'application tourne sans crash sur un appareil réel | 3 | lancement sur un appareil Android, parcours de chaque écran |
 | Fonctionnalités livrées et cohérence du périmètre | 2 | trois à cinq écrans terminés, sans écran commencé puis abandonné |
-| Architecture en couches et injection de dépendances | 3 | seule la couche de données importe le client HTTP et lit du JSON ; `grep -rnE "getIt|GetIt" lib/ui` ne renvoie rien |
+| Architecture en couches et injection de dépendances | 3 | aucun fichier de `lib/ui` n'importe le client HTTP, seule la couche de données construit les requêtes et lit du JSON, un bloc peut détenir un jeton d'annulation ; `grep -rnE "getIt|GetIt" lib/ui` ne renvoie rien |
 | BLoC utilisé correctement | 2 | aucune requête ni règle métier dans un `build` ; les écrans émettent des événements ou appellent des méthodes de cubit |
 | Les quatre états traités partout | 2 | chargement, erreur, vide et données sur chaque écran qui attend une donnée ; l'erreur provoquée par le mode hors ligne des DevTools de Chrome ou le mode avion |
 | Seconde plateforme | 2 | l'application se lance et fonctionne sur le web **et** sur Android |

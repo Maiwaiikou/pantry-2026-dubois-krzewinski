@@ -26,7 +26,8 @@ Sortie : `[Nutella, Lentilles, (sans nom), (sans nom), (sans nom)]`
 - Après le test `e != null`, `e` est promu en `String` : `e.trim()` s'écrit sans `!`.
 - Un `map` qui remplace chaque entrée sur place conserve l'ordre d'origine, alors que l'énoncé
   demande les noms utilisables d'abord.
-- Écriture équivalente : `where(...).toList()`, puis `addAll`.
+- Écriture équivalente : `whereType<String>().where((e) => e.trim().isNotEmpty).toList()`, puis
+  `addAll`. `where` seul conserve le type `String?` des éléments.
 
 ---
 

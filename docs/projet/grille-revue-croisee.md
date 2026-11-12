@@ -31,7 +31,7 @@ remplie montre à l'équipe relue ce que la correction regardera.
 | Lancement | après les commandes de l'étape 1, l'application se lance dans Chrome sans erreur ; au moins un écran affiche des données de l'API | | |
 | Injection | `grep -rnE "getIt|GetIt" lib/ui` ne renvoie rien | | |
 | BLoC | aucune requête ni règle métier dans un `build` ; les écrans émettent des événements | | |
-| Couches | seule la couche `data` importe le client HTTP et lit du JSON | | |
+| Couches | aucun fichier de `lib/ui` n'importe le client HTTP ; seule la couche `data` construit les requêtes et lit du JSON | | |
 | Quatre états d'interface | chaque écran montre chargement, erreur, liste vide et données ; l'erreur provoquée par le mode hors ligne des DevTools de Chrome ou le mode avion | | |
 | Robustesse | réseau coupé (mode avion, ou hors ligne dans les DevTools), permission refusée si l'application en demande une, réponse vide (une recherche ou une requête sans résultat) : l'application ne casse pas | | |
 | Seconde plateforme | l'application se lance sur le web **et** sur Android | | |

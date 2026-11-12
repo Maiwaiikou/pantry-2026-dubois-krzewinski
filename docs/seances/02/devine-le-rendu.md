@@ -116,7 +116,11 @@ Row(
   children: const [
     Icon(Icons.star),
     Text('Préparation pour gâteau au chocolat noir intense et éclats de '
-        'noisettes torréfiées'),
+        'noisettes torréfiées, sans huile de palme, à préparer avec trois '
+        'œufs, cent grammes de beurre doux et un demi-litre de lait entier, '
+        'pour un moule de vingt-quatre centimètres de diamètre et huit à dix '
+        'parts généreuses, cuisson de trente-cinq minutes à cent '
+        'quatre-vingts degrés'),
   ],
 )
 ```

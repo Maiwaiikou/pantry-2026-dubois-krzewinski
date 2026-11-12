@@ -32,7 +32,7 @@ la séance 12, jusqu'au dépôt, servent à finir et à rédiger le rapport.
 | les quatre états d'interface | chargement, données, erreur, vide, sur chaque écran qui attend une donnée |
 | persistance locale | au minimum des préférences et un cache |
 | gestion d'état avec BLoC | aucune requête ni règle métier dans un `build` |
-| architecture en couches | seule la couche de données connaît le client HTTP et le JSON |
+| architecture en couches | seule la couche de données construit les requêtes et lit le JSON ; aucun écran n'importe le client HTTP |
 | `get_it` et `injectable` | aucun appel au conteneur dans les widgets |
 | navigation avec `go_router` | plusieurs écrans |
 | deux plateformes | Android et web |
