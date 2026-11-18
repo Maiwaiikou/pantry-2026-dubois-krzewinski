@@ -43,20 +43,51 @@ class ProductDetailPage extends StatelessWidget {
           ),
         ],
       ),
-      body: _ToDo(product: product),
+      body: _ToDo(product: product, onProductRequested: onProductRequested, availableProducts: availableProducts),
     );
   }
 }
 
 /// À SUPPRIMER une fois la fiche construite.
 class _ToDo extends StatelessWidget {
-  const _ToDo({required this.product});
+  const _ToDo({required this.product,
+    required this.onProductRequested,
+    required this.availableProducts,});
 
   final Product product;
+  final List<Product> availableProducts;
+  final ValueChanged<Product> onProductRequested;
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return 
+      Card(
+        margin: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Row(
+              children: [
+              Text('Fiche produit', style: Theme.of(context).textTheme.titleLarge),
+              Expanded(child: Container()),
+              PopupMenuButton<Product>(
+                tooltip: 'Changer de produit',
+                icon: const Icon(Icons.swap_horiz),
+                onSelected: onProductRequested,
+                itemBuilder: (context) => [
+                  for (final p in availableProducts)
+                    PopupMenuItem(value: p, child: Text(p.displayName)),
+                ],
+              ),
+            ]),
+            const SizedBox(height: 16),
+            ProductImagePlaceholder(initial: product.initial),
+            Text(product.displayName, style: Theme.of(context).textTheme.titleLarge),
+            Text(product.brand != null ? product.brand! : '', style: Theme.of(context).textTheme.titleMedium),
+            Text(product.quantity != null ? product.quantity! : '', style: Theme.of(context).textTheme.titleSmall),
+          ],
+        )
+      );
+    /*return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -80,6 +111,6 @@ class _ToDo extends StatelessWidget {
           ],
         ),
       ),
-    );
+    );*/
   }
 }
