@@ -61,32 +61,35 @@ class _ToDo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return 
-      Card(
-        margin: const EdgeInsets.all(16),
-        child: Column(
+      ListView(
+          padding: const EdgeInsets.all(16),
           children: [
-            Row(
+            Column(
               children: [
-              Text('Fiche produit', style: Theme.of(context).textTheme.titleLarge),
-              Expanded(child: Container()),
-              PopupMenuButton<Product>(
-                tooltip: 'Changer de produit',
-                icon: const Icon(Icons.swap_horiz),
-                onSelected: onProductRequested,
-                itemBuilder: (context) => [
-                  for (final p in availableProducts)
-                    PopupMenuItem(value: p, child: Text(p.displayName)),
+                Row(
+                  children: [
+                    ProductImagePlaceholder(initial: product.initial),
+                    const SizedBox(width: 16),
+                    Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(product.displayName, style: Theme.of(context).textTheme.titleLarge, overflow: TextOverflow.ellipsis),
+                        Text(product.brand != null ? product.brand! : '', style: Theme.of(context).textTheme.titleMedium, overflow: TextOverflow.ellipsis),
+                        Text(product.quantity != null ? product.quantity! : '', style: Theme.of(context).textTheme.titleSmall, overflow: TextOverflow.ellipsis),
+                      ],
+                    ),
+                  ),
                 ],
               ),
-            ]),
-            const SizedBox(height: 16),
-            ProductImagePlaceholder(initial: product.initial),
-            Text(product.displayName, style: Theme.of(context).textTheme.titleLarge),
-            Text(product.brand != null ? product.brand! : '', style: Theme.of(context).textTheme.titleMedium),
-            Text(product.quantity != null ? product.quantity! : '', style: Theme.of(context).textTheme.titleSmall),
-          ],
-        )
-      );
+              const Divider(height: 49, thickness: 1),
+
+              Text("NUTRI-SCORE", style: Theme.of(context).textTheme.titleSmall)
+
+              
+            ],
+          )],
+        );
     /*return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
