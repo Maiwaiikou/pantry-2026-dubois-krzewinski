@@ -76,39 +76,32 @@ d'absence, repartir de la branche de la séance concernée.
 **Chaque branche de séance contient un fichier `TP.md`** : l'énoncé complet du TP, rédigé pour être
 suivi de façon autonome.
 
-## Rendre un TP
+## En fin de séance
 
-Ce dépôt est en lecture seule. Le rendu se pousse sur **votre fork**, créé une fois pour l'année
-depuis le bouton **Fork** de cette page, puis déclaré comme second remote :
-
-```bash
-git remote add perso https://github.com/<votre-compte>/pantry-2026.git
-```
-
-En fin de séance :
+Committer le travail sur sa branche :
 
 ```bash
 git add -A
 git commit -m "TP 3"
-git push perso tp03-<votrenom>
 ```
 
-GitHub refuse le mot de passe du compte pour un push en HTTPS : utiliser un jeton d'accès
-personnel, ou une adresse SSH pour le remote `perso`.
+`git switch` refuse de changer de branche, ou emporte les modifications en cours, tant qu'elles
+ne sont pas committées. Les TP ne sont pas rendus : l'évaluation porte sur le rendu final, décrit
+dans le cahier des charges.
 
-| Règle | Détail |
-|---|---|
-| ce qui compte | 20 % de la note : les livrables de quatre séances, tirées au sort parmi les séances 2 à 10, après la séance 10 |
-| ce qui est vérifié | les critères de l'exercice prioritaire, nommés dans la section « Rendu » du `TP.md` |
-| échéance | le dernier commit poussé avant la fin de la séance |
-| binôme | chacun pousse sur son fork ; un rendu commun est accepté sur demande, branche `tpNN-<nom1>-<nom2>` |
-| absence | une séance tirée et manquée vaut zéro, sauf absence justifiée : une autre séance est alors tirée |
+## Paquets
 
-Pousser la branche de départ ou le corrigé ne valide rien. Un fork d'un dépôt public est public.
+Chaque séance ajoute au projet les paquets dont elle a besoin, par une commande donnée dans son
+`TP.md` :
 
-Le `pubspec.yaml` est **identique sur toutes les branches**, y compris pour des paquets utilisés
-seulement dans les séances ultérieures. Ce choix est volontaire : un changement de branche ne
-déclenche alors aucun téléchargement, et `flutter pub get` est immédiat.
+```bash
+flutter pub add go_router:18.0.0
+```
+
+La version est imposée : les énoncés et les corrigés sont écrits pour elle. La commande inscrit le
+paquet dans `pubspec.yaml` et met à jour `pubspec.lock`, qui se committent avec le reste. Une
+branche `-start` reprend le `pubspec.yaml` et le `pubspec.lock` du corrigé précédent, plus les
+paquets qu'utilise le code fourni.
 
 ## Les branches
 
@@ -141,13 +134,21 @@ dart run build_runner build
 ```
 
 Une erreur inattendue après un changement de branche provient le plus souvent de code généré
-obsolète : relancer la commande ci-dessus.
+obsolète, laissé par une autre séance. Le supprimer, puis régénérer :
+
+```bash
+git clean -fX lib
+dart run build_runner build
+```
+
+`git clean -fX lib` ne retire que les fichiers que Git ignore dans `lib/`, c'est-à-dire le code
+généré. Sur une branche sans `build_runner`, séances 2 et 3, la première commande suffit.
 
 ## Un mot sur l'API
 
 À partir de la séance 4, l'application interroge par défaut le service du cours, un miroir
 d'[Open Food Facts](https://world.openfoodfacts.org/data), et non l'API réelle. Celle-ci applique
-des **limites de débit par adresse IP**, et toute la salle partage la même adresse : les énoncés de
-TP précisent quand l'utiliser. Sans réseau, `--dart-define=PANTRY_OFFLINE=true` sert des données
+des **limites de débit par adresse IP**, et toute la salle partage la même adresse : les TP ne
+l'appellent jamais. Sans réseau, `--dart-define=PANTRY_OFFLINE=true` sert des données
 locales. Le service exige un jeton à partir de la séance 6 : une branche antérieure se relance
 alors avec ce même `PANTRY_OFFLINE=true`.

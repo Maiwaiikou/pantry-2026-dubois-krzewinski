@@ -17,9 +17,8 @@ flutter pub get
 flutter run -d chrome
 ```
 
-`flutter pub get` télécharge environ 330 Mo au premier appel. Les changements de branche
-ultérieurs ne déclenchent aucun téléchargement : le `pubspec.yaml` est identique sur toutes les
-branches.
+`flutter pub get` télécharge les paquets déclarés dans `pubspec.yaml`. Chaque séance en ajoute,
+par une commande donnée dans son énoncé.
 
 Travaillez sur votre propre branche :
 
@@ -144,22 +143,14 @@ acceptées ; le choix retenu doit pouvoir être justifié.
 - Affichage de la fiche en deux colonnes au-delà de 700 px de largeur ; élargir la fenêtre de
   Chrome pour l'observer. Ce point relève de la séance 9 et ne doit pas mobiliser trop de temps.
 
-## Rendu
+## Fin de séance
 
-Le rendu se pousse sur votre fork du dépôt du cours, déclaré comme remote `perso` : la mise en
-place est décrite dans le README, section « Rendre un TP ».
+Committer le travail sur sa branche avant la séance suivante : `git switch` refuse de changer de
+branche, ou emporte les modifications en cours, tant qu'elles ne sont pas committées.
 
 ```bash
 git add -A
 git commit -m "TP 2"
-git push perso tp02-<votrenom>
 ```
-
-**Ce qui est vérifié si la séance est tirée au sort** : les critères de l'exercice 1, la fiche produit. Le livrable est validé si ces
-critères sont atteints sur le dernier commit poussé avant la fin de la séance. Pousser la branche
-de départ ou le corrigé ne valide rien.
-
-**En binôme**, chacun pousse sur son propre fork. Un rendu commun est accepté sur demande, sur la
-branche `tp02-<nom1>-<nom2>`.
 
 Le corrigé est publié sur `session-02-solution` à l'issue de la séance.
