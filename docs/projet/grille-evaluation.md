@@ -1,6 +1,6 @@
 # Rendu final · grille de notation
 
-Le rendu est noté sur 20. Il vaut 80 % de la note du module. La note est une note d'équipe.
+Le rendu est noté sur 20. Il fait toute la note du module. La note est une note d'équipe.
 
 Chaque critère se vérifie sur le dépôt rendu, par la manipulation ou la lecture indiquée.
 

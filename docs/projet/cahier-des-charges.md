@@ -1,7 +1,7 @@
 # Rendu final · cahier des charges
 
 Le rendu final reprend ce qui a été vu sur Pantry, sur une **autre API** et avec des maquettes
-libres : une transposition, pas un copier-coller. Il vaut **80 %** de la note du module. Il se
+libres : une transposition, pas un copier-coller. Il fait **toute la note** du module. Il se
 travaille en équipe de deux ou trois, principalement pendant les séances 11 et 12.
 
 Le rendu comporte deux pièces, dans un même dépôt Git : **l'application**, et un **rapport** de
@@ -87,10 +87,8 @@ Une API hors de la liste est possible. Elle doit être validée par l'enseignant
 
 ## Évaluation
 
-| Poids | Modalité |
-|---|---|
-| **80 %** | le rendu final, application et rapport, noté selon la [grille de notation](grille-evaluation.md) |
-| **20 %** | le contrôle continu : les livrables de TP de quatre séances tirées au sort après la séance 10, validés si les critères de l'exercice prioritaire sont atteints (section « Rendu » de chaque `TP.md`) |
+Le rendu final, application et rapport, fait toute la note du module, selon la
+[grille de notation](grille-evaluation.md). Les TP ne sont pas notés.
 
 La note du rendu est une note d'équipe, la même pour chacun de ses membres. Elle tient compte du
 nombre de membres de l'équipe.
