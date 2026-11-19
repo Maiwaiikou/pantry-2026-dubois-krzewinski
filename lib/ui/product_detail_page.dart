@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:pantry/models/product.dart';
+import 'package:pantry/ui/widgets/detail_section.dart';
+import 'package:pantry/ui/widgets/nutri_score_scale.dart';
 import 'package:pantry/ui/widgets/product_image_placeholder.dart';
 
 /// Écran « fiche produit », **à construire, exercice 1 du TP 2**.
@@ -64,56 +66,114 @@ class _ToDo extends StatelessWidget {
       ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            Column(
-              children: [
-                Row(
-                  children: [
-                    ProductImagePlaceholder(initial: product.initial),
-                    const SizedBox(width: 16),
-                    Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(product.displayName, style: Theme.of(context).textTheme.titleLarge, overflow: TextOverflow.ellipsis),
-                        Text(product.brand != null ? product.brand! : '', style: Theme.of(context).textTheme.titleMedium, overflow: TextOverflow.ellipsis),
-                        Text(product.quantity != null ? product.quantity! : '', style: Theme.of(context).textTheme.titleSmall, overflow: TextOverflow.ellipsis),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const Divider(height: 49, thickness: 1),
-
-              Text("NUTRI-SCORE", style: Theme.of(context).textTheme.titleSmall)
-
-              
-            ],
-          )],
-        );
-    /*return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ProductImagePlaceholder(initial: product.initial),
-            const SizedBox(height: 16),
-            Text(
-              product.displayName,
-              style: Theme.of(context).textTheme.titleMedium,
-              textAlign: TextAlign.center,
+            _Header(product: product),
+            const _SectionDivider(),
+            DetailSection(
+              title: 'Nutri-Score',
+              child: product.nutriScore == null
+                ? const MissingValue('Non évalué')
+                : NutriScoreScale(grade: product.nutriScore),
+            ),
+            const _SectionDivider(),
+            DetailSection(
+              title: 'Catégories',
+              child: product.categories.isEmpty
+                ?const MissingValue('Aucune catégorie renseignée')
+                : Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      for (final category in product.categories)
+                        Chip(label: Text(category)),
+                    ]
+                )  
+            ),
+            const _SectionDivider(),
+            DetailSection(
+              title: 'Code-barres',
+              child: product.barcode == null
+                ? const MissingValue('Non renseigné')
+                : Text(product.barcode!),
             ),
             const SizedBox(height: 24),
-            const Text(
-              'À construire : reproduire design/fiche-produit.svg.\n\n'
-              'Remplacer ce widget par la fiche complète, puis vérifier le '
-              'rendu sur les six produits accessibles par le menu ↔ en haut à '
-              'droite : plusieurs sont incomplets.',
-              textAlign: TextAlign.center,
+            DetailSection(
+              title: 'Péremption',
+              child: product.expiresOn == null
+                ? const MissingValue('Non renseignée')
+                : Text(_formatDate(product.expiresOn!)),
             ),
-          ],
-        ),
-      ),
-    );*/
+            const SizedBox(height: 24),
+          ]
+        );
+
+        
+  }
+}
+String _formatDate(DateTime date) {
+  final d = date.day.toString().padLeft( 2, '0');
+  final m = date.month.toString().padLeft( 2, '0');
+  return '$d/$m/${date.year}';   
+}
+
+class _Header extends StatelessWidget{
+  const _Header({required this.product});
+
+  final Product product;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ProductImagePlaceholder(initial: product.initial),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children:[
+              Text(
+                product.displayName,
+                style: theme.textTheme.headlineSmall
+                ?.copyWith(fontWeight: FontWeight.w600),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              if(product.brand != null) ...[
+                const SizedBox(height: 4),
+                Text(
+                  product.brand!,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+              if(product.quantity != null) ...[
+                const SizedBox(height: 4),
+                Text(
+                  product.quantity!,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ]
+            ]
+          )
+        )
+      ],
+    );
+  }
+}
+
+class _SectionDivider extends StatelessWidget{
+  const _SectionDivider();
+
+  @override
+  Widget build(BuildContext context) {
+    return Divider(
+      height: 49,
+      thickness: 1,
+      color: Theme.of(context).colorScheme.outlineVariant,
+    );
   }
 }
