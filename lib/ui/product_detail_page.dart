@@ -91,9 +91,7 @@ class _ToDo extends StatelessWidget {
             const _SectionDivider(),
             DetailSection(
               title: 'Code-barres',
-              child: product.barcode == null
-                ? const MissingValue('Non renseigné')
-                : Text(product.barcode!),
+              child: Text(product.barcode),
             ),
             const SizedBox(height: 24),
             DetailSection(
