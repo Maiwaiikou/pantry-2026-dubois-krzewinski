@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:pantry/ui/add_product_page.dart';
+import 'package:pantry/ui/product_detail_page.dart';
 
 import 'package:pantry/data/mock_products.dart';
 import 'package:pantry/models/product.dart';
@@ -59,17 +62,45 @@ class _PantryAppState extends State<PantryApp> {
     // TODO(tp-03): remplacer `MaterialApp` par `MaterialApp.router` et
     // déclarer les trois routes de l'énoncé. Le thème part dans `lib/theme/`
     // à l'exercice 2.
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Pantry',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF3F7D58)),
         useMaterial3: true,
       ),
-      home: StockPage(
-        products: _products,
-        onProductAdded: addProduct,
-        onProductRemoved: removeProduct,
+      routerConfig: GoRouter(
+        routes: [
+          GoRoute(
+            path: '/',
+            pageBuilder: (context, state) => MaterialPage(
+              child: StockPage(
+                products: _products,
+                onProductAdded: addProduct,
+                onProductRemoved: removeProduct,
+              ),
+            ),
+          ),
+          GoRoute(
+            path: '/add',
+            pageBuilder: (context, state) => MaterialPage(
+              child: AddProductPage(
+                onSubmitted: (product) {
+                  addProduct(product);
+                  context.pop();
+                },
+              ),
+            ),
+          ),
+          GoRoute(
+            path: '/product/:barcode',
+            pageBuilder: (context, state) => MaterialPage(
+              child: ProductDetailPage(
+                product: _products.firstWhere((p) => p.barcode == state.pathParameters['barcode']),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

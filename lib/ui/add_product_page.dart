@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:go_router/go_router.dart';
 import 'package:pantry/models/product.dart';
 
 /// Écran « ajouter un produit ».
