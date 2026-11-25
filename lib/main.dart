@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pantry/theme/Theme.dart';
 import 'package:pantry/ui/add_product_page.dart';
 import 'package:pantry/ui/product_detail_page.dart';
 
@@ -65,10 +66,9 @@ class _PantryAppState extends State<PantryApp> {
     return MaterialApp.router(
       title: 'Pantry',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF3F7D58)),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system,
       routerConfig: GoRouter(
         routes: [
           GoRoute(
