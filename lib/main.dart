@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:pantry/theme/Theme.dart';
-import 'package:pantry/ui/add_product_page.dart';
-import 'package:pantry/ui/product_detail_page.dart';
-
-import 'package:pantry/data/mock_products.dart';
-import 'package:pantry/models/product.dart';
-import 'package:pantry/ui/stock_page.dart';
+import 'package:pantry/data/stock_scope.dart';
+import 'package:pantry/router.dart';
+import 'package:pantry/theme/pantry_theme.dart';
+import 'package:pantry/theme/theme_mode_scope.dart';
 
 void main() => runApp(const PantryApp());
 
@@ -31,77 +28,23 @@ class PantryApp extends StatefulWidget {
 }
 
 class _PantryAppState extends State<PantryApp> {
-  late List<Product> _products = List.of(mockProducts);
-
-  /// Ajoute un produit au stock, ou remplace celui qui porte le même
-  /// code-barres.
-  ///
-  /// Le code-barres est l'identité d'un produit : deux exemplaires du même
-  /// article ne forment qu'une entrée. Cette règle est ce qui autorise
-  /// `ValueKey(product.barcode)` dans la liste.
-  void addProduct(Product product) {
-    setState(() {
-      final index = _products.indexWhere((p) => p.barcode == product.barcode);
-      _products = index == -1
-          ? [..._products, product]
-          : [
-              ..._products.sublist(0, index),
-              product,
-              ..._products.sublist(index + 1),
-            ];
-    });
-  }
-
-  void removeProduct(String barcode) {
-    setState(() {
-      _products = _products.where((p) => p.barcode != barcode).toList();
-    });
-  }
+  late final GoRouter _router = createRouter();
 
   @override
   Widget build(BuildContext context) {
-    // TODO(tp-03): remplacer `MaterialApp` par `MaterialApp.router` et
-    // déclarer les trois routes de l'énoncé. Le thème part dans `lib/theme/`
-    // à l'exercice 2.
-    return MaterialApp.router(
-      title: 'Pantry',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
-      routerConfig: GoRouter(
-        routes: [
-          GoRoute(
-            path: '/',
-            pageBuilder: (context, state) => MaterialPage(
-              child: StockPage(
-                products: _products,
-                onProductAdded: addProduct,
-                onProductRemoved: removeProduct,
-              ),
-            ),
-          ),
-          GoRoute(
-            path: '/add',
-            pageBuilder: (context, state) => MaterialPage(
-              child: AddProductPage(
-                onSubmitted: (product) {
-                  addProduct(product);
-                  context.pop();
-                },
-              ),
-            ),
-          ),
-          GoRoute(
-            path: '/product/:barcode',
-            pageBuilder: (context, state) => MaterialPage(
-              child: ProductDetailPage(
-                product: _products.firstWhere((p) => p.barcode == state.pathParameters['barcode']),
-              ),
-            ),
-          ),
-        ],
-      ),
+    return StockScope(
+      child: ThemeModeScope(
+        child: Builder(
+          builder: (context) => MaterialApp.router(
+            title: 'pantry',
+            debugShowCheckedModeBanner: false,
+            theme: PantryTheme.light,
+            darkTheme: PantryTheme.dark,
+            themeMode: ThemeModeScope.of(context).value,
+            routerConfig: _router,
+          )
+        )
+      )
     );
   }
 }

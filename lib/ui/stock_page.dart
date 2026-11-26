@@ -1,141 +1,201 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
+import 'package:pantry/data/stock_scope.dart';
 import 'package:pantry/models/product.dart';
-import 'package:pantry/ui/product_detail_page.dart';
+import 'package:pantry/ui/widgets/product_list_tile.dart';
+import 'package:pantry/ui/widgets/theme_mode_menu.dart';
 
 /// Écran « mon stock » : recherche, liste, retrait par balayage.
 ///
-/// Seul le contrat est fourni : `products` est le stock complet, non filtré,
-/// `onProductAdded` reçoit le produit que renvoie la route `/add`, et
-/// `onProductRemoved` le code-barres du produit retiré. Le champ de recherche,
-/// le filtrage, la liste, la ligne de produit et la navigation font partie de
-/// l'exercice.
+/// L'écran ne reçoit plus rien. Le stock et ses deux opérations sont lus dans
+/// le contexte par `StockScope.of(context)`, ce qui a fait disparaître les
+/// trois paramètres que la table de routage devait faire descendre.
 class StockPage extends StatefulWidget {
-  const StockPage({
-    required this.products,
-    required this.onProductAdded,
-    required this.onProductRemoved,
-    super.key,
-  });
-
-  /// Stock complet, dans l'ordre d'ajout. Le filtrage n'est pas fait ici.
-  final List<Product> products;
-
-  /// Appelé avec le produit renvoyé par la route `/add`.
-  final ValueChanged<Product> onProductAdded;
-
-  /// Appelé avec le code-barres du produit retiré du stock.
-  final ValueChanged<String> onProductRemoved;
+  const StockPage({super.key});
 
   @override
   State<StockPage> createState() => _StockPageState();
 }
 
 class _StockPageState extends State<StockPage> {
+  final _searchController = TextEditingController();
+
+  /// Terme de recherche courant, en minuscules.
   String _query = '';
 
-  List<Product> get _filteredProducts {
-    final query = _query.trim().toLowerCase();
-    if (query.isEmpty) {
-      return widget.products;
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  /// Produits retenus par la recherche courante.
+  ///
+  /// Le filtrage est recalculé à chaque build. Sur dix-huit produits le coût
+  /// est nul ; sur un stock réel il faudrait le mémoriser, ce que la séance 5
+  /// obtiendra en le déplaçant dans un bloc.
+  List<Product> _results(List<Product> products) {
+    if (_query.isEmpty) {
+      return products;
     }
-    return widget.products.where((product) {
+    return products.where((product) {
       final name = product.name?.toLowerCase() ?? '';
       final brand = product.brand?.toLowerCase() ?? '';
-      return name.contains(query) || brand.contains(query);
+      return name.contains(_query) || brand.contains(_query);
     }).toList();
   }
+
+  Future<void> _openAddProduct(ValueChanged<Product> addProduct) async {
+    // `push` renvoie la valeur passée à `pop` par l'écran suivant. Le type
+    // attendu est déclaré ici : sans lui, le résultat serait un `Object?`.
+    final product = await context.push<Product>('/add');
+    if (product == null) {
+      return;
+    }
+    addProduct(product);
+
+    // `mounted` protège l'usage du `context` après un `await` : l'écran peut
+    // avoir disparu entre-temps. Le lint `use_build_context_synchronously`
+    // signale l'oubli, et la séance 4 revient sur ce point.
+    if (!mounted) {
+      return;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('${product.displayName} ajouté au stock')),
+    );
+  }
+
+  void _removeProduct(Product product, ValueChanged<String> removeProduct) {
+    removeProduct(product.barcode);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('${product.displayName} retiré du stock')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Un seul appel, en tête de build : l'écran dépend désormais du stock, et
+    // sera reconstruit à chaque changement de liste.
+    final stock = StockScope.of(context);
+    final results = _results(stock.products);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Mon stock')),
+      appBar: AppBar(
+        title: const Text('Mon stock'),
+        actions: const [ThemeModeMenu()],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _openAddProduct(stock.addProduct),
+        tooltip: 'Ajouter un produit',
+        child: const Icon(Icons.add),
+      ),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(16),
             child: TextField(
-              decoration: const InputDecoration(
+              controller: _searchController,
+              decoration: InputDecoration(
                 labelText: 'Rechercher',
-                prefixIcon: Icon(Icons.search),
+                hintText: 'Nom ou marque',
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: _query.isEmpty
+                    ? null
+                    : IconButton(
+                        tooltip: 'Effacer',
+                        icon: const Icon(Icons.close),
+                        onPressed: () {
+                          _searchController.clear();
+                          setState(() => _query = '');
+                        },
+                      ),
               ),
-              onChanged: (value) {
-                setState(() {
-                  _query = value;
-                });
-              },
+              textInputAction: TextInputAction.search,
+              onChanged: (value) =>
+                  setState(() => _query = value.trim().toLowerCase()),
             ),
           ),
+          // Expanded : sans lui, le ListView reçoit une hauteur non bornée dans
+          // la Column et lève l'exception vue en séance 2.
           Expanded(
-            child: ListView.builder(
-              itemCount: _filteredProducts.length,
-              itemBuilder:(context, index) {
-                  final product = _filteredProducts[index];
-
-
-                  return Dismissible(
-                    key: ValueKey(product.barcode),
-                    direction: DismissDirection.endToStart,
-                    background: Container(
-                      color: Colors.red,
-                      alignment: Alignment.centerRight,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: const Icon(Icons.delete, color: Colors.white),
-                    ),
-                    onDismissed: (direction) {
-                      widget.onProductRemoved(product.barcode);
+            child: results.isEmpty
+                ? _EmptyResults(query: _query)
+                : ListView.builder(
+                    // `.builder` ne crée que les widgets visibles. La
+                    // forme `ListView(children: [...])` créerait les
+                    // dix-huit objets d'un coup, sans construire plus
+                    // de lignes.
+                    itemCount: results.length,
+                    itemBuilder: (context, index) {
+                      final product = results[index];
+                      return Dismissible(
+                        // La clé porte l'identité de la ligne. Sans elle, la
+                        // liste réutilise l'Element de la ligne retirée pour
+                        // la suivante, et Flutter lève une exception.
+                        key: ValueKey(product.barcode),
+                        direction: DismissDirection.endToStart,
+                        background: const _DismissBackground(),
+                        onDismissed: (_) =>
+                            _removeProduct(product, stock.removeProduct),
+                        child: ProductListTile(
+                          product: product,
+                          onTap: () =>
+                              context.go('/product/${product.barcode}'),
+                        ),
+                      );
                     },
-                    child: ProductRow(
-                      product: product,
-                      onProductRemoved: widget.onProductRemoved,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ProductDetailPage(product: product),
-                          ),
-                        );
-                      },
-                    ),
-                  );
-              }),
-            ),
+                  ),
+          ),
         ],
       ),
-      );
+    );
   }
 }
 
-class ProductRow extends StatelessWidget {
-  const ProductRow({
-    super.key,
-    required this.product,
-    required this.onProductRemoved,
-    required this.onTap,
-  });
-
-  final Product product;
-  final ValueChanged<String> onProductRemoved;
-  final VoidCallback onTap;
+/// Fond révélé pendant le balayage d'une ligne.
+class _DismissBackground extends StatelessWidget {
+  const _DismissBackground();
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: product.name != null ? Text(product.name!) : const Text('Nom non disponible'),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (product.brand != null)
-            Text('Marque : ${product.brand}'),
-          
-          if (product.expiresOn != null)
-            Text('Date de péremption : ${product.expiresOn}'),
-        ],
+    final scheme = Theme.of(context).colorScheme;
+    return ColoredBox(
+      color: scheme.errorContainer,
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: Padding(
+          padding: const EdgeInsets.only(right: 24),
+          child: Icon(Icons.delete_outline, color: scheme.onErrorContainer),
+        ),
       ),
-      trailing: IconButton(
-        icon: const Icon(Icons.delete),
-        onPressed: () => onProductRemoved(product.barcode),
+    );
+  }
+}
+
+/// Liste vide : le stock est vide, ou la recherche ne renvoie rien.
+///
+/// Un écran vide sans texte laisse croire à un défaut d'affichage.
+class _EmptyResults extends StatelessWidget {
+  const _EmptyResults({required this.query});
+
+  final String query;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Text(
+          query.isEmpty
+              ? 'Le stock est vide. Ajouter un produit avec le bouton +.'
+              : 'Aucun produit ne correspond à « $query ».',
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodyLarge
+              ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+        ),
       ),
-      onTap: onTap,
     );
   }
 }
